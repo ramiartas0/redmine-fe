@@ -1,23 +1,46 @@
-import React from "react";
-import Avatar from "@mui/material/Avatar";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Container from "@mui/material/Container";
-import CssBaseline from "@mui/material/CssBaseline";
-import Grid from "@mui/material/Grid";
-import Link from "@mui/material/Link";
-import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
+import React, { useState } from "react";
+import { Avatar, Button, CssBaseline, TextField, Link, Grid, Box, Typography, Container } from '@mui/material';
+import axios from 'axios';
+import { useNavigate } from "react-router-dom";
 
 export default function Register() {
-  const handleSubmit = (evt) => {
-    evt.preventDefault();
-    const data = new FormData(evt.currentTarget);
-    console.log({
-      username: data.get("username"),
-      password: data.get("password"),
-    });
+
+  const [userName, setUserName] = useState('')
+  const [name, setName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [email, setEmail] = useState('')
+  const [userPassword, setUserPassword] = useState('')
+  const navigation = useNavigate()
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const data = {
+      username: userName,
+      name: name,
+      lastName: lastName,
+      email: email,
+      userPassword: userPassword
+    }
+
+    try {
+      await axios.post('https://localhost:7057/auth/register', data)
+      handleClear()
+      //navigation(`/login`) 
+      
+    } catch (error) {
+      return error;
+    }
+
   };
+
+  const handleClear = () =>{
+    setUserName('')
+    setName('')
+    setLastName('')
+    setEmail('')
+    setUserPassword('')
+  }
 
   return (
     <Container component="main" maxWidth="xs">
@@ -30,32 +53,36 @@ export default function Register() {
           alignItems: "center",
         }}
       >
-        <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+        <Avatar src={`${process.env.PUBLIC_URL}/logo.png`} sx={{ m: 2, bgcolor: 'blue' }}>
         </Avatar>
         <Typography component="h1" variant="h5">
           Register
         </Typography>
-        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 3 }}>
+        <Box component="form" onSubmit={(e) => handleSubmit(e)} noValidate sx={{ mt: 3 }}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
                 required
                 fullWidth
-                id="username"
-                label="Username"
-                name="username"
-                autoComplete="username"
+                id="userName"
+                label="Kullanıcı Adı"
+                name="userName"
+                autoComplete="userName"
+                value={userName}
+                onChange={(e) => setUserName(e.target.value)}
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
                 required
                 fullWidth
-                name="password"
-                label="Password"
+                name="userPassword"
+                label="Şifre"
                 type="password"
-                id="password"
+                id="userPassword"
                 autoComplete="new-password"
+                value={userPassword}
+                onChange={(e) => setUserPassword(e.target.value)}
               />
             </Grid>
           <Grid item xs={12}>
@@ -67,6 +94,8 @@ export default function Register() {
                 type="email"
                 id="email"
                 autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </Grid>
             <Grid item xs={12}>
@@ -74,21 +103,25 @@ export default function Register() {
                 required
                 fullWidth
                 name="name"
-                label="Name"
-                type="name"
+                label="Adı"
+                type="text"
                 id="name"
                 autoComplete="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
                 required
                 fullWidth
-                name="surname"
-                label="Surname"
-                type="surname"
-                id="surname"
-                autoComplete="surname"
+                name="lastName"
+                label="Soyadı"
+                type="text"
+                id="lastName"
+                autoComplete="lastName"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
               />
             </Grid>
           </Grid>
@@ -98,12 +131,12 @@ export default function Register() {
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
           >
-            Register
+            Kayıt Ol
           </Button>
           <Grid container justifyContent="flex-end">
             <Grid item>
               <Link href="/login" variant="body2">
-                Already have an account? Login
+                Giriş Yap
               </Link>
             </Grid>
           </Grid>
