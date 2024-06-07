@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Avatar, Button, CssBaseline, TextField, Link, Grid, Box, Typography, Container } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { login } from '../api';
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -17,9 +17,8 @@ export default function Login() {
     }
 
     try {
-      await axios.post('https://localhost:7057/auth/login', data)
-      navigate(`/home`); 
-      
+      await login(data);
+      navigate(`/home`);
     } catch (error) {
       return error;
     }

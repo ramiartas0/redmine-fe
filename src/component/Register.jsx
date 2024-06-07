@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Avatar, Button, CssBaseline, TextField, Link, Grid, Box, Typography, Container } from '@mui/material';
-import axios from 'axios';
+import { register } from '../api';
 import { useNavigate } from "react-router-dom";
 
 export default function Register() {
@@ -10,7 +10,7 @@ export default function Register() {
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
   const [userPassword, setUserPassword] = useState('')
-  const navigation = useNavigate()
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,24 +23,15 @@ export default function Register() {
       userPassword: userPassword
     }
 
+   
     try {
-      await axios.post('https://localhost:7057/auth/register', data)
-      handleClear()
-      //navigation(`/login`) 
-      
+      await register(data);
+      navigate(`/login`)
     } catch (error) {
       return error;
     }
 
   };
-
-  const handleClear = () =>{
-    setUserName('')
-    setName('')
-    setLastName('')
-    setEmail('')
-    setUserPassword('')
-  }
 
   return (
     <Container component="main" maxWidth="xs">
