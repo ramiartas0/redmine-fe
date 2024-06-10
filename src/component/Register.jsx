@@ -1,37 +1,40 @@
-import React, { useState } from "react";
+
+import React from "react";
 import { Avatar, Button, CssBaseline, TextField, Link, Grid, Box, Typography, Container } from '@mui/material';
-import { register } from '../api';
 import { useNavigate } from "react-router-dom";
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import { register } from '../services/api';
 
 export default function Register() {
-
-  const [userName, setUserName] = useState('')
-  const [name, setName] = useState('')
-  const [lastName, setLastName] = useState('')
-  const [email, setEmail] = useState('')
-  const [userPassword, setUserPassword] = useState('')
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const validationSchema = Yup.object({
+    userName: Yup.string().required('Kullanıcı Adı gereklidir'),
+    email: Yup.string().email('Geçersiz email adresi').required('Email gereklidir'),
+    userPassword: Yup.string().min(6, 'Şifre en az 6 karakter uzunluğunda olmalıdır').required('Şifre gereklidir'),
+    name: Yup.string().required('Ad gereklidir'),
+    lastName: Yup.string().required('Soyad gereklidir')
+  });
 
-    const data = {
-      username: userName,
-      name: name,
-      lastName: lastName,
-      email: email,
-      userPassword: userPassword
+  const formik = useFormik({
+    initialValues: {
+      userName: '',
+      name: '',
+      lastName: '',
+      email: '',
+      userPassword: ''
+    },
+    validationSchema: validationSchema,
+    onSubmit: async (values) => {
+      try {
+        await register(values);
+        navigate(`/login`);
+      } catch (error) {
+        console.error('Kayıt sırasında bir hata oluştu:', error);
+      }
     }
-
-   
-    try {
-      await register(data);
-      navigate(`/login`)
-    } catch (error) {
-      return error;
-    }
-
-  };
+  });
 
   return (
     <Container component="main" maxWidth="xs">
@@ -47,9 +50,9 @@ export default function Register() {
         <Avatar src={`${process.env.PUBLIC_URL}/logo.png`} sx={{ m: 2, bgcolor: 'blue' }}>
         </Avatar>
         <Typography component="h1" variant="h5">
-          Register
+          Kayıt Ol
         </Typography>
-        <Box component="form" onSubmit={(e) => handleSubmit(e)} noValidate sx={{ mt: 3 }}>
+        <Box component="form" onSubmit={formik.handleSubmit} noValidate sx={{ mt: 3 }}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField
@@ -59,60 +62,72 @@ export default function Register() {
                 label="Kullanıcı Adı"
                 name="userName"
                 autoComplete="userName"
-                value={userName}
-                onChange={(e) => setUserName(e.target.value)}
+                value={formik.values.userName}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.userName && Boolean(formik.errors.userName)}
+                helperText={formik.touched.userName && formik.errors.userName}
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
                 required
                 fullWidth
-                name="userPassword"
-                label="Şifre"
-                type="password"
-                id="userPassword"
-                autoComplete="new-password"
-                value={userPassword}
-                onChange={(e) => setUserPassword(e.target.value)}
-              />
-            </Grid>
-          <Grid item xs={12}>
-              <TextField
-                required
-                fullWidth
-                name="email"
-                label="Email"
-                type="email"
-                id="email"
-                autoComplete="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                required
-                fullWidth
-                name="name"
-                label="Adı"
-                type="text"
                 id="name"
-                autoComplete="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                label="Ad"
+                name="name"
+                autoComplete="given-name"
+                value={formik.values.name}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.name && Boolean(formik.errors.name)}
+                helperText={formik.touched.name && formik.errors.name}
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
                 required
                 fullWidth
-                name="lastName"
-                label="Soyadı"
-                type="text"
                 id="lastName"
-                autoComplete="lastName"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
+                label="Soyad"
+                name="lastName"
+                autoComplete="family-name"
+                value={formik.values.lastName}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.lastName && Boolean(formik.errors.lastName)}
+                helperText={formik.touched.lastName && formik.errors.lastName}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                id="email"
+                label="Email"
+                name="email"
+                autoComplete="email"
+                value={formik.values.email}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.email && Boolean(formik.errors.email)}
+                helperText={formik.touched.email && formik.errors.email}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                id="userPassword"
+                label="Şifre"
+                name="userPassword"
+                type="password"
+                autoComplete="new-password"
+                value={formik.values.userPassword}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.userPassword && Boolean(formik.errors.userPassword)}
+                helperText={formik.touched.userPassword && formik.errors.userPassword}
               />
             </Grid>
           </Grid>
@@ -127,7 +142,7 @@ export default function Register() {
           <Grid container justifyContent="flex-end">
             <Grid item>
               <Link href="/login" variant="body2">
-                Giriş Yap
+                Zaten bir hesabınız var mı? Giriş Yap
               </Link>
             </Grid>
           </Grid>
@@ -136,3 +151,4 @@ export default function Register() {
     </Container>
   );
 }
+
