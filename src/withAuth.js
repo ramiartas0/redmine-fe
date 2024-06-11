@@ -1,11 +1,19 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 
 const withAuth = (Component) => {
-  return (props) => {
-    const token = localStorage.getItem('token');
-    const isAuthenticated = !!token;
+  return function AuthenticatedComponent(props) {
+    const [isAuthenticated, setIsAuthenticated] = useState(null);
+
+    useEffect(() => {
+      const token = localStorage.getItem('token');
+      setIsAuthenticated(!!token);
+    }, []);
+
+    if (isAuthenticated === null) {
+      return <div>Loading...</div>;
+    }
 
     if (!isAuthenticated) {
       return <Navigate to="/login" replace />;

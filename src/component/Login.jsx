@@ -22,9 +22,11 @@ export default function Login() {
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       try {
-        const { token } = await login(values);
-        localStorage.setItem('token', token);
-        navigate(`/home`);
+        const response = await login(values);
+        if (response.token) {
+          localStorage.setItem('token', response.token);
+          navigate('/home', { replace: true });
+        }
       } catch (error) {
         console.error('Giriş sırasında bir hata oluştu:', error);
       }

@@ -29,7 +29,7 @@ export default function Register() {
     onSubmit: async (values) => {
       try {
         await register(values);
-        navigate(`/login`);
+        navigate(`/`);
       } catch (error) {
         console.error('Kayıt sırasında bir hata oluştu:', error);
       }
