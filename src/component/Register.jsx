@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { register } from '../services/api';
+import Swal from 'sweetalert2'
 
 export default function Register() {
   const navigate = useNavigate();
@@ -28,10 +29,14 @@ export default function Register() {
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       try {
-        await register(values);
-        navigate(`/`);
+       const response = await register(values);
+       if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+        Swal.fire({text: "Giriş Başarılı!",icon: "success"});
+        navigate('/home', { replace: true });
+      }
       } catch (error) {
-        console.error('Kayıt sırasında bir hata oluştu:', error);
+        Swal.fire({text: "Kayıt başarısız",icon: "error"});
       }
     }
   });

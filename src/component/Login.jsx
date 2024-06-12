@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { login } from '../services/api';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import Swal from 'sweetalert2'
 
 export default function Login() {
   const navigate = useNavigate();
@@ -23,12 +24,14 @@ export default function Login() {
     onSubmit: async (values) => {
       try {
         const response = await login(values);
-        if (response.token) {
-          localStorage.setItem('token', response.token);
+        if (response.data.token) {
+          localStorage.setItem('token', response.data.token);
+          Swal.fire({text: "Giriş Başarılı!",icon: "success"});
           navigate('/home', { replace: true });
         }
       } catch (error) {
-        console.error('Giriş sırasında bir hata oluştu:', error);
+        Swal.fire({text: "Giriş Başarısız!",icon: "error"});
+        throw error;
       }
     }
   });

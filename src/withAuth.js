@@ -5,7 +5,6 @@ import { Navigate } from 'react-router-dom';
 const withAuth = (Component) => {
   return function AuthenticatedComponent(props) {
     const [isAuthenticated, setIsAuthenticated] = useState(null);
-
     useEffect(() => {
       const token = localStorage.getItem('token');
       setIsAuthenticated(!!token);
@@ -16,7 +15,7 @@ const withAuth = (Component) => {
     }
 
     if (!isAuthenticated) {
-      return <Navigate to="/login" replace />;
+      return <Navigate to="/" replace />;
     }
 
     return <Component {...props} />;
